@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Take</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: url('take.png') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    table {
+      width: 80%;
+      margin: 20px auto;
+      border-collapse: collapse;
+      background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white */
+      color: #333;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    table tr:last-child td {
+      border-bottom: none; /* Remove extra border on last row */
+    }
+  </style>
+</head>
+<body>
+  <h1>Available Meals</h1>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Amount (Person)</th>
+        <th>Given At</th>
+        <th>Expiry Time (Hour)</th>
+        <th>Pickup Location</th>
+        <th>Contact</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (take.length > 0) { %>
+        <% take.forEach(item => { %>
+          <tr>
+            <td><%= item.food_item %></td>
+            <td><%= item.amount %></td>
+            <td><%= item.given_at %></td>
+            <td><%= item.expiry_time %></td>
+            <td><%= item.pickup_location %></td>
+            <td><%= item.contact %></td>
+          </tr>
+        <% }); %>
+      <% } else { %>
+        <tr>
+          <td colspan="6">No food data found!</td>
+        </tr>
+      <% } %>
+    </tbody>
+  </table>
+</body>
+</html>

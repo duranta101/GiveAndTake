@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Give</title>
+  <style>
+    html, body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden; /* Disable scrolling */
+    }
+
+    body {
+      background: url('give.png') no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 450px;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+    
+    p {
+      font-size: 16px;
+      color: #555;
+      margin-bottom: 15px;
+    }
+    
+    .highlight-text {
+      font-weight: bold;
+      color: #00674b;
+      font-size: 18px;
+    }
+    
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-top: 15px;
+    }
+    
+    label {
+      font-size: 14px;
+      color: #555;
+      font-weight: bold; /* Make labels bold */
+      text-align: left;
+    }
+    
+    input {
+      padding: 10px;
+      font-size: 14px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      width: 100%;
+    }
+    
+    input:focus {
+      outline: none;
+      border-color: #4B6F44;
+    }
+    
+    .btn {
+      padding: 12px;
+      background-color: #4B6F44;
+      color: #fff;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    
+    .btn:hover {
+      background-color: #355E3B;
+    }
+    
+    .contact-foundation {
+      margin-top: 10px;
+      background-color: #4B6F44;
+    }
+    
+    .contact-foundation:hover {
+      background-color: #355E3B;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <p class="highlight-text">If you prefer not to give randomly, you can contact one of the verified foundations we support by clicking the button below.</p>
+    <button class="btn contact-foundation" onclick="window.location.href='/foundations';">
+      Contact a Foundation
+    </button>    
+    
+    <p class="highlight-text">If you prefer to give randomly, please fill out the form below.</p>
+    
+    <form action="/" method="post">
+      <label for="food-item">What is the name of the food item(s) you wish to donate?</label>
+      <input type="text" id="food_name" name="food_name" required>
+      
+      <label for="quantity">How many people can the food serve?</label>
+      <input type="number" id="amount" name="amount" placeholder="Enter number" required>
+      
+      <label for="expiration">When is the food expected to expire? (in hours)</label>
+      <input type="number" id="expiry_time" name="expiry_time" placeholder="Enter number" required>
+      
+      <label for="pickup-location">Where should the food be picked up?</label>
+      <input type="text" id="pickup_location" name="pickup_location" required>
+      
+      <label for="phone-number">Enter your phone number:</label>
+      <input type="tel" id="phone" name="phone" placeholder="Enter the phone number you used while creating the account" required>
+      
+      <button type="submit" class="btn">Submit</button>
+    </form>
+  </div>
+</body>
+</html>

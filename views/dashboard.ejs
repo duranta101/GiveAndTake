@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Give & Take</title>
+    <style>
+        /* General reset and body styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('home.png'); /* Replace with your background image */
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed; /* Makes the background image static */
+            height: 100vh;
+            overflow: hidden; /* Prevents scrolling */
+            color: #fff;
+        }
+
+        /* Fixed Navigation Bar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .navbar .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .navbar .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .navbar .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 18px;
+        }
+
+        .navbar .nav-links a:hover {
+            color: #FFD700;
+        }
+
+        /* Content Container (keeps the background fixed) */
+        .content-container {
+            position: relative;
+            z-index: 1; /* Makes sure content is above the fixed background */
+            height: 100%; /* Fills the entire height of the viewport */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Quote Section */
+        .quote {
+            margin-top: 150px; /* Adjust this value to move the quote further down */
+            text-align: center;
+            font-size: 30px;
+            font-style: italic;
+            font-weight: bold;
+        }
+
+        /* Centered Buttons */
+        .buttons {
+            position: absolute;
+            top: 55%; /* Vertically centers the buttons */
+            left: 50%; /* Horizontally centers the buttons */
+            transform: translate(-50%, -50%); /* Adjusts position to the exact center */
+            display: flex;
+            gap: 150px;
+        }
+
+        button {
+            padding: 20px 50px;
+            font-size: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            border-radius: 50px;
+            transition: background-color 0.3s ease;
+        }
+
+        .give-btn {
+            background-color: rgba(0, 0, 0, 0.5); /* Green */
+            color: white;
+        }
+
+        .take-btn {
+            background-color: rgba(0, 0, 0, 0.5); /* Blue */
+            color: white;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <span>Give & Take</span>
+        </div>
+        <div class="nav-links">
+            <a href="/dashboard">Home</a>
+            <a href="/members">Leaderboard</a>
+            <a href="/impact">Impact</a>
+            <a href="#">About</a>
+            <a href="#">Profile</a>
+        </div>
+    </nav>
+
+    <section class="main-content">
+        <blockquote class="quote">
+            "We make a living by what we get, but we make a life by what we give." – Winston Churchill
+        </blockquote>
+        <div class="buttons">
+            <button class="give-btn" onclick="location.href='/'">Give</button>
+            <button class="take-btn" onclick="location.href='/take'">Take</button>
+        </div>
+    </section>
+</body>
+</html>
