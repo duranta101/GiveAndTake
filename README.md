@@ -1,0 +1,1 @@
+<p>"Give & Take" is a platform I developed to help share surplus food with those in need. The goal is to reduce food waste and ensure that good, edible food reaches the right hands.<p>
