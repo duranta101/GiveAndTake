@@ -68,19 +68,25 @@ app.get("/", authenticate, (req, res) => {
 app.post("/", authenticate, (req, res) => {
   const { food_name, amount, expiry_time, pickup_location, phone } = req.body;
 
+  const currentTimestamp = Math.floor(Date.now() / 1000); // current time in seconds
+  const expirySeconds = parseInt(expiry_time) * 3600; // expiry_time is in hours → seconds
+
   const sql = `
-    INSERT INTO food (food_item, amount, expiry_time, pickup_location, contact) 
-    VALUES (?, ?, ?, ?, ?)
+    INSERT INTO food (food_item, amount, expiry_time, pickup_location, contact, given_at)
+    VALUES (?, ?, ?, ?, ?, FROM_UNIXTIME(?))
   `;
 
-  con.query(sql, [food_name, amount, expiry_time, pickup_location, phone], (error, result) => {
-    if (error) {
-      console.error("Database insertion failed:", error);
-      return res.status(500).send("An error occurred while saving the data.");
+  con.query(
+    sql,
+    [food_name, amount, expirySeconds, pickup_location, phone, currentTimestamp],
+    (error, result) => {
+      if (error) {
+        console.error("Database insertion failed:", error);
+        return res.status(500).send("An error occurred while saving the data.");
+      }
+      res.render("thanks");
     }
-    // Render the thank-you page after successful submission
-    res.render("thanks");
-  });
+  );
 });
 
 // Dashboard route (authenticated)
@@ -89,9 +95,9 @@ app.get("/dashboard", authenticate, (req, res) => {
 });
 
 // Remaining routes
-app.get("/take", authenticate, (req, res) => {
-  const sql = "SELECT * FROM food ORDER BY given_at DESC";
 
+app.get("/take", authenticate, (req, res) => {
+  const sql = "SELECT *, UNIX_TIMESTAMP(given_at) + expiry_time AS expiry_timestamp FROM food ORDER BY given_at DESC";
   con.query(sql, (error, results) => {
     if (error) {
       console.error("Error fetching food data:", error);
@@ -101,6 +107,16 @@ app.get("/take", authenticate, (req, res) => {
     res.render("take", { take: results });
   });
 });
+
+// Delete expired food items
+setInterval(() => {
+  const sql = "DELETE FROM food WHERE UNIX_TIMESTAMP(given_at) + expiry_time <= UNIX_TIMESTAMP()";
+  con.query(sql, (error, result) => {
+    if (error) {
+      console.error("Error deleting expired food:", error);
+    }
+  });
+}, 10000);
 
 app.get("/impact", authenticate, (req, res) => {
   const sql = "SELECT SUM(amount) AS total_food FROM food";

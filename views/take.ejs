@@ -23,7 +23,7 @@
       width: 80%;
       margin: 20px auto;
       border-collapse: collapse;
-      background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white */
+      background-color: rgba(255, 255, 255, 0.8);
       color: #333;
       border-radius: 10px;
       overflow: hidden;
@@ -40,7 +40,12 @@
     }
 
     table tr:last-child td {
-      border-bottom: none; /* Remove extra border on last row */
+      border-bottom: none;
+    }
+
+    .timer {
+      font-weight: bold;
+      color: red;
     }
   </style>
 </head>
@@ -53,29 +58,65 @@
         <th>Item</th>
         <th>Amount (Person)</th>
         <th>Given At</th>
-        <th>Expiry Time (Hour)</th>
         <th>Pickup Location</th>
         <th>Contact</th>
+        <th>Expiry Countdown</th>
       </tr>
     </thead>
     <tbody>
       <% if (take.length > 0) { %>
-        <% take.forEach(item => { %>
-          <tr>
+        <% take.forEach((item, index) => { %>
+          <tr id="food-<%= item.id %>">
             <td><%= item.food_item %></td>
             <td><%= item.amount %></td>
-            <td><%= item.given_at %></td>
-            <td><%= item.expiry_time %></td>
+            <td><%= item.given_at.toLocaleString() %></td>
             <td><%= item.pickup_location %></td>
             <td><%= item.contact %></td>
+            <td><span class="timer" id="timer-<%= index %>" data-expiry="<%= item.expiry_timestamp %>">Loading...</span></td>
           </tr>
         <% }); %>
       <% } else { %>
         <tr>
-          <td colspan="6">No food data found!</td>
+          <td colspan="6">Sorry, no meals are available at the moment.</td>
         </tr>
       <% } %>
     </tbody>
   </table>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const timers = document.querySelectorAll(".timer");
+
+      timers.forEach(timer => {
+        const expiryTimestamp = parseInt(timer.getAttribute("data-expiry")) * 1000;
+        const row = timer.closest("tr");
+
+        function updateCountdown() {
+          const now = Date.now();
+          const remainingMs = expiryTimestamp - now;
+
+          if (remainingMs <= 0) {
+            timer.textContent = "Expired";
+            row.style.backgroundColor = "#ffcccc";
+            setTimeout(() => row.remove(), 1000);
+            return;
+          }
+
+          const totalSeconds = Math.floor(remainingMs / 1000);
+          const hrs = Math.floor(totalSeconds / 3600);
+          const mins = Math.floor((totalSeconds % 3600) / 60);
+          const secs = totalSeconds % 60;
+
+          timer.textContent =
+            (hrs > 0 ? hrs + "h " : "") +
+            (mins > 0 ? mins + "m " : "") +
+            secs + "s";
+        }
+
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+      });
+    });
+  </script>
 </body>
 </html>
