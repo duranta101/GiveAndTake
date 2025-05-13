@@ -97,10 +97,16 @@ app.get("/dashboard", authenticate, (req, res) => {
 // Remaining routes
 
 app.get("/take", authenticate, (req, res) => {
-  const sql = "SELECT *, UNIX_TIMESTAMP(given_at) + expiry_time AS expiry_timestamp FROM food ORDER BY given_at DESC";
+const sql = `
+  SELECT *, UNIX_TIMESTAMP(given_at) + expiry_time AS expiry_timestamp 
+  FROM food 
+  WHERE UNIX_TIMESTAMP(given_at) + expiry_time > UNIX_TIMESTAMP() 
+  ORDER BY given_at DESC
+`;
+
   con.query(sql, (error, results) => {
     if (error) {
-      console.error("Error fetching food data:", error);
+      console.error("Error fetching food data:", error.sqlMessage || error);
       return res.status(500).send("An error occurred while retrieving the food data.");
     }
 
@@ -108,12 +114,13 @@ app.get("/take", authenticate, (req, res) => {
   });
 });
 
-// Delete expired food items
+
+// Mark expired food items instead of deleting
 setInterval(() => {
-  const sql = "DELETE FROM food WHERE UNIX_TIMESTAMP(given_at) + expiry_time <= UNIX_TIMESTAMP()";
+  const sql = "UPDATE food SET is_expired = TRUE WHERE is_expired = FALSE AND UNIX_TIMESTAMP(given_at) + expiry_time <= UNIX_TIMESTAMP()";
   con.query(sql, (error, result) => {
     if (error) {
-      console.error("Error deleting expired food:", error);
+      console.error("Error marking food as expired:", error);
     }
   });
 }, 10000);
