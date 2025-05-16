@@ -178,6 +178,27 @@ app.get("/foundations", authenticate, (req, res) => {
   });
 });
 
+// Route to serve the Profile page (authenticated)
+app.get("/profile", authenticate, (req, res) => {
+  const user = req.session.user; // Get the logged-in user from the session
+  const sql = `
+    SELECT * FROM food WHERE contact = ? ORDER BY given_at DESC
+  `;
+
+  con.query(sql, [user.phone], (error, results) => {
+    if (error) {
+      console.error("Error fetching donation history:", error);
+      return res.status(500).send("An error occurred while retrieving the donation history.");
+    } 
+
+    console.log("Donation history:", results); // Debug log to check fetched data
+
+    const totalDonations = results.reduce((sum, donation) => sum + donation.amount, 0);
+    res.render("profile", { user, donations: results, totalDonations });
+  });
+});
+
+
 // Route to handle sign-out
 app.get("/signout", (req, res) => {
   req.session.destroy(err => {

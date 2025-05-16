@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('nav.png') no-repeat center center fixed;
+            background-size: cover;
+            color: #fff;
+        }
+
+        .profile-container {
+            max-width: 800px;
+            margin: 80px auto;
+            padding: 20px;
+        }
+
+        .profile-header {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .profile-info {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 10px;
+            font-size: 18px;
+        }
+
+        .profile-info label {
+            font-weight: bold;
+            color: #FFD700;
+        }
+
+        .giving-record {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .giving-record h2 {
+            color: #FFD700;
+            margin-bottom: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th {
+            background-color: rgba(255, 215, 0, 0.1);
+            color: #FFD700;
+        }
+
+        .total-donations {
+            margin-top: 20px;
+            font-size: 20px;
+            color: #FFD700;
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <div class="profile-header">
+            <h1>My Profile</h1>
+            <div class="profile-info">
+                <label>Name:</label>
+                <span><%= user.name %></span>
+                <label>Phone:</label>
+                <span><%= user.phone %></span>
+                <label>NID:</label>
+                <span><%= user.nid_no %></span>
+            </div>
+        </div>
+
+        <div class="giving-record">
+            <h2>Giving Record</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Food Item</th>
+                        <th>Amount</th>
+                        <th>Location</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% donations.forEach(donation => { %>
+                        <tr>
+                            <td><%= new Date(donation.given_at).toLocaleDateString() %></td>
+                            <td><%= donation.food_item %></td>
+                            <td><%= donation.amount %> people</td>
+                            <td><%= donation.pickup_location %></td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+            <div class="total-donations">
+                People Fed: <%= totalDonations %>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
