@@ -16,58 +16,79 @@
 
     h1 {
       text-align: center;
-      margin-top: 20px;
+      margin-top: 40px;
+      color: #FFD700;
+      font-size: 36px;
+    }
+
+    .leaderboard-container {
+      width: 90%;
+      max-width: 1000px;
+      margin: 30px auto;
+      padding: 20px;
+      background-color: rgba(0, 0, 0, 0.5);
+      border-radius: 10px;
     }
 
     table {
-      width: 80%;
-      margin: 20px auto;
+      width: 100%;
       border-collapse: collapse;
-      background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white */
-      color: #333;
-      border-radius: 10px;
-      overflow: hidden;
+      margin-top: 10px;
     }
 
     th, td {
-      border: 1px solid #ccc;
-      padding: 10px;
+      padding: 12px;
       text-align: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      color: #fff;
     }
 
     th {
-      background-color: #f2f2f2;
+      background-color: rgba(255, 215, 0, 0.1);
+      color: #FFD700;
     }
 
+    tr:nth-child(even) {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .no-data {
+      text-align: center;
+      padding: 20px;
+      font-size: 18px;
+      color: #FFD700;
+    }
   </style>
 </head>
 <body>
-  <h1>Top Givers</h1>
-  <table>
-    <thead>
-      <tr>
-        <th>Rank</th>
-        <th>Name</th>
-        <th>Phone</th>
-        <th>Meals Given</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% if (members.length > 0) { %>
-        <% members.forEach((member, index) => { %>
-          <tr>
-            <td><%= index + 1 %></td>
-            <td><%= member.name %></td>
-            <td><%= member.phone %></td>
-            <td><%= member.total_amount || 0 %></td>
-          </tr>
-        <% }); %>
-      <% } else { %>
+  <div class="leaderboard-container">
+    <h1>Top Givers</h1>
+    <table>
+      <thead>
         <tr>
-          <td colspan="4">No members data available!</td>
+          <th>Rank</th>
+          <th>Name</th>
+          <th>Phone</th>
+          <th>Meals Given</th>
         </tr>
-      <% } %>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        <% if (members.length > 0) { %>
+          <% members.forEach((member, index) => { %>
+            <tr>
+              <td><%= index + 1 %></td>
+              <td><%= member.name %></td>
+              <td><%= member.phone %></td>
+              <td><%= member.total_amount || 0 %></td>
+            </tr>
+          <% }); %>
+        <% } else { %>
+          <tr>
+            <td colspan="4" class="no-data">No members data available!</td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
 </body>
 </html>
