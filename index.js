@@ -125,7 +125,7 @@ setInterval(() => {
   });
 }, 10000);
 
-app.get("/impact", authenticate, (req, res) => {
+app.get("/impact", (req, res) => {
   const sql = "SELECT SUM(amount) AS total_food FROM food";
 
   con.query(sql, (error, result) => {
@@ -137,6 +137,10 @@ app.get("/impact", authenticate, (req, res) => {
     const totalFood = result[0].total_food || 0; // Default to 0 if no data
     res.render("impact", { totalFood });
   });
+});
+
+app.get("/about", (req, res) => {
+  res.render("about");
 });
 
 app.get("/members", authenticate, (req, res) => {
