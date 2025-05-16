@@ -23,6 +23,10 @@ app.set("view engine", "ejs");
 // Serve static files (e.g., CSS, images, or JS files for the pages)
 app.use(express.static("public"));
 
+
+
+
+
 // Route to serve the Sign In page
 app.get("/signin", (req, res) => {
   res.sendFile(__dirname + "/signin.html");
@@ -58,150 +62,6 @@ const authenticate = (req, res, next) => {
     res.redirect("/signin"); // Redirect to sign-in page if not authenticated
   }
 };
-
-// Route to serve the Give page (authenticated)
-app.get("/", authenticate, (req, res) => {
-  res.sendFile(__dirname + "/give.html");
-});
-
-// Route to handle form submission
-app.post("/", authenticate, (req, res) => {
-  const { food_name, amount, expiry_time, pickup_location, phone } = req.body;
-
-  const currentTimestamp = Math.floor(Date.now() / 1000); // current time in seconds
-  const expirySeconds = parseInt(expiry_time) * 3600; // expiry_time is in hours → seconds
-
-  const sql = `
-    INSERT INTO food (food_item, amount, expiry_time, pickup_location, contact, given_at)
-    VALUES (?, ?, ?, ?, ?, FROM_UNIXTIME(?))
-  `;
-
-  con.query(
-    sql,
-    [food_name, amount, expirySeconds, pickup_location, phone, currentTimestamp],
-    (error, result) => {
-      if (error) {
-        console.error("Database insertion failed:", error);
-        return res.status(500).send("An error occurred while saving the data.");
-      }
-      res.render("thanks");
-    }
-  );
-});
-
-// Dashboard route (authenticated)
-app.get("/dashboard", authenticate, (req, res) => {
-  res.render("dashboard", { user: req.session.user });
-});
-
-// Remaining routes
-
-app.get("/take", authenticate, (req, res) => {
-const sql = `
-  SELECT *, UNIX_TIMESTAMP(given_at) + expiry_time AS expiry_timestamp 
-  FROM food 
-  WHERE UNIX_TIMESTAMP(given_at) + expiry_time > UNIX_TIMESTAMP() 
-  ORDER BY given_at DESC
-`;
-
-  con.query(sql, (error, results) => {
-    if (error) {
-      console.error("Error fetching food data:", error.sqlMessage || error);
-      return res.status(500).send("An error occurred while retrieving the food data.");
-    }
-
-    res.render("take", { take: results });
-  });
-});
-
-
-// Mark expired food items instead of deleting
-setInterval(() => {
-  const sql = "UPDATE food SET is_expired = TRUE WHERE is_expired = FALSE AND UNIX_TIMESTAMP(given_at) + expiry_time <= UNIX_TIMESTAMP()";
-  con.query(sql, (error, result) => {
-    if (error) {
-      console.error("Error marking food as expired:", error);
-    }
-  });
-}, 10000);
-
-app.get("/impact", (req, res) => {
-  const sql = "SELECT SUM(amount) AS total_food FROM food";
-
-  con.query(sql, (error, result) => {
-    if (error) {
-      console.error("Error fetching total food data:", error);
-      return res.status(500).send("An error occurred while retrieving the impact data.");
-    }
-
-    const totalFood = result[0].total_food || 0; // Default to 0 if no data
-    res.render("impact", { totalFood });
-  });
-});
-
-app.get("/about", (req, res) => {
-  res.render("about");
-});
-
-app.get("/members", authenticate, (req, res) => {
-  const sql = `
-    SELECT u.name, u.phone, SUM(f.amount) AS total_amount
-    FROM users u
-    LEFT JOIN food f ON u.phone = f.contact
-    GROUP BY u.phone
-    ORDER BY total_amount DESC
-  `;
-
-  con.query(sql, (error, results) => {
-    if (error) {
-      console.error("Error fetching members data:", error);
-      return res.status(500).send("An error occurred while retrieving members data.");
-    }
-
-    res.render("members", { members: results });
-  });
-});
-
-app.get("/foundations", authenticate, (req, res) => {
-  const sql = "SELECT * FROM foundations";
-
-  con.query(sql, (error, results) => {
-    if (error) {
-      console.error("Error fetching foundation data:", error);
-      return res.status(500).send("An error occurred while retrieving the foundation data.");
-    }
-
-    results = results.map(foundation => ({
-      name: foundation.name,
-      address: foundation.address || "Not available",
-      phone: foundation.phone || "Not available",
-      email: foundation.email || "Not available"
-    }));
-
-    res.render("foundations", { foundations: results });
-  });
-});
-
-// Route to serve the Profile page (authenticated)
-app.get("/profile", authenticate, (req, res) => {
-  const user = req.session.user; // Get the logged-in user from the session
-  const sql = `
-    SELECT * FROM food WHERE contact = ? ORDER BY given_at DESC
-  `;
-
-  con.query(sql, [user.phone], (error, results) => {
-    if (error) {
-      console.error("Error fetching donation history:", error);
-      return res.status(500).send("An error occurred while retrieving the donation history.");
-    } 
-
-    console.log("Donation history:", results); // Debug log to check fetched data
-
-    const totalDonations = results.reduce((sum, donation) => sum + donation.amount, 0);
-    res.render("profile", { user, donations: results, totalDonations });
-  });
-});
-
 
 // Route to handle sign-out
 app.get("/signout", (req, res) => {
@@ -249,6 +109,179 @@ app.post("/signup", (req, res) => {
     });
   });
 });
+
+
+
+
+
+// Dashboard route (authenticated)
+app.get("/dashboard", authenticate, (req, res) => {
+  res.render("dashboard", { user: req.session.user });
+});
+
+
+
+
+
+// Route to serve the Give page (authenticated)
+app.get("/", authenticate, (req, res) => {
+  res.sendFile(__dirname + "/give.html");
+});
+
+// Route to handle form submission
+app.post("/", authenticate, (req, res) => {
+  const { food_name, amount, expiry_time, pickup_location, phone } = req.body;
+
+  const currentTimestamp = Math.floor(Date.now() / 1000); // current time in seconds
+  const expirySeconds = parseInt(expiry_time) * 3600; // expiry_time is in hours → seconds
+
+  const sql = `
+    INSERT INTO food (food_item, amount, expiry_time, pickup_location, contact, given_at)
+    VALUES (?, ?, ?, ?, ?, FROM_UNIXTIME(?))
+  `;
+
+  con.query(
+    sql,
+    [food_name, amount, expirySeconds, pickup_location, phone, currentTimestamp],
+    (error, result) => {
+      if (error) {
+        console.error("Database insertion failed:", error);
+        return res.status(500).send("An error occurred while saving the data.");
+      }
+      res.render("thanks");
+    }
+  );
+});
+
+app.get("/foundations", authenticate, (req, res) => {
+  const sql = "SELECT * FROM foundations";
+
+  con.query(sql, (error, results) => {
+    if (error) {
+      console.error("Error fetching foundation data:", error);
+      return res.status(500).send("An error occurred while retrieving the foundation data.");
+    }
+
+    results = results.map(foundation => ({
+      name: foundation.name,
+      address: foundation.address || "Not available",
+      phone: foundation.phone || "Not available",
+      email: foundation.email || "Not available"
+    }));
+
+    res.render("foundations", { foundations: results });
+  });
+});
+
+
+
+
+
+// Remaining routes
+app.get("/take", authenticate, (req, res) => {
+const sql = `
+  SELECT *, UNIX_TIMESTAMP(given_at) + expiry_time AS expiry_timestamp 
+  FROM food 
+  WHERE UNIX_TIMESTAMP(given_at) + expiry_time > UNIX_TIMESTAMP() 
+  ORDER BY given_at DESC
+`;
+
+  con.query(sql, (error, results) => {
+    if (error) {
+      console.error("Error fetching food data:", error.sqlMessage || error);
+      return res.status(500).send("An error occurred while retrieving the food data.");
+    }
+
+    res.render("take", { take: results });
+  });
+});
+
+// Mark expired food items instead of deleting
+setInterval(() => {
+  const sql = "UPDATE food SET is_expired = TRUE WHERE is_expired = FALSE AND UNIX_TIMESTAMP(given_at) + expiry_time <= UNIX_TIMESTAMP()";
+  con.query(sql, (error, result) => {
+    if (error) {
+      console.error("Error marking food as expired:", error);
+    }
+  });
+}, 10000);
+
+
+
+
+
+app.get("/members", authenticate, (req, res) => {
+  const sql = `
+    SELECT u.name, u.phone, SUM(f.amount) AS total_amount
+    FROM users u
+    LEFT JOIN food f ON u.phone = f.contact
+    GROUP BY u.phone
+    ORDER BY total_amount DESC
+  `;
+
+  con.query(sql, (error, results) => {
+    if (error) {
+      console.error("Error fetching members data:", error);
+      return res.status(500).send("An error occurred while retrieving members data.");
+    }
+
+    res.render("members", { members: results });
+  });
+});
+
+
+
+
+
+app.get("/impact", (req, res) => {
+  const sql = "SELECT SUM(amount) AS total_food FROM food";
+
+  con.query(sql, (error, result) => {
+    if (error) {
+      console.error("Error fetching total food data:", error);
+      return res.status(500).send("An error occurred while retrieving the impact data.");
+    }
+
+    const totalFood = result[0].total_food || 0; // Default to 0 if no data
+    res.render("impact", { totalFood });
+  });
+});
+
+
+
+
+
+app.get("/about", (req, res) => {
+  res.render("about");
+});
+
+
+
+
+
+// Route to serve the Profile page (authenticated)
+app.get("/profile", authenticate, (req, res) => {
+  const user = req.session.user; // Get the logged-in user from the session
+  const sql = `
+    SELECT * FROM food WHERE contact = ? ORDER BY given_at DESC
+  `;
+
+  con.query(sql, [user.phone], (error, results) => {
+    if (error) {
+      console.error("Error fetching donation history:", error);
+      return res.status(500).send("An error occurred while retrieving the donation history.");
+    } 
+
+    console.log("Donation history:", results); // Debug log to check fetched data
+
+    const totalDonations = results.reduce((sum, donation) => sum + donation.amount, 0);
+    res.render("profile", { user, donations: results, totalDonations });
+  });
+});
+
+
+
+
 
 // Start the server
 app.listen(5500, () => {
