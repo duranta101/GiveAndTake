@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meal History</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: url('take.png') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    table {
+      width: 80%;
+      margin: 20px auto;
+      border-collapse: collapse;
+      background-color: rgba(255, 255, 255, 0.8);
+      color: #333;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .timer {
+      font-weight: bold;
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <h1>Meals history</h1>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Amount (Person)</th>
+        <th>Given At</th>
+        <th>Pickup Location</th>
+        <th>Contact</th>
+        
+      </tr>
+    </thead>
+    <tbody>
+      <% if (foods.length > 0) { %>
+        <% foods.forEach((item, index) => { %>
+          <tr id="food-<%= item.id %>">
+            <td><%= item.food_item %></td>
+            <td><%= item.amount %></td>
+            <td><%= item.given_at.toLocaleString() %></td>
+            <td><%= item.pickup_location %></td>
+            <td><%= item.contact %></td>
+          </tr>
+        <% }); %>
+      <% } else { %>
+        <tr>
+          <td colspan="6">Sorry, no meals are available at the moment.</td>
+        </tr>
+      <% } %>
+    </tbody>
+  </table>
+
+  
+</body>
+</html>

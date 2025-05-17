@@ -5,6 +5,24 @@
     "express": "^4.21.2",
     "express-session": "^1.18.1",
     "mysql": "^2.18.1",
-    "nodemon": "^3.1.9"
-  }
+    "nodemon": "^3.1.10"
+  },
+  "name": "giveandtake",
+  "version": "1.0.0",
+  "description": "<p>\"Give & Take\" is a social impact platform designed to share surplus food with those in need. The goal is to reduce food waste and ensure that good, edible food reaches the right hands.<p>",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/duranta101/GiveAndTake.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/duranta101/GiveAndTake/issues"
+  },
+  "homepage": "https://github.com/duranta101/GiveAndTake#readme"
 }

@@ -74,6 +74,42 @@ app.get("/signout", (req, res) => {
   });
 });
 
+// Route to serve the Admin Sign In page
+app.get("/adminsignin", (req, res) => {
+  res.sendFile(__dirname + "/admin.html");
+});
+
+// Route to handle Admin sign-in
+app.post("/adminsignin", (req, res) => {
+  const { phone, password } = req.body;
+
+  const sql = "SELECT * FROM admin WHERE phone = ? AND password = ?";
+  con.query(sql, [phone, password], (error, results) => {
+    if (error) {
+      console.error("Error during sign-in:", error);
+      return res.status(500).send("An error occurred during sign-in.");
+    }
+
+    if (results.length > 0) {
+      // Save user info in session
+      req.session.user = results[0];
+      console.log(`User ${results[0].name} logged in`);
+      res.redirect("/admindashboard"); // Redirect to the main page or dashboard
+    } else {
+      res.status(401).send("Invalid phone number or password.");
+    }
+  });
+});
+
+// Midleware to protect admin routes
+const authenticateAdmin = (req, res, next) => {
+  if (req.session.user) {
+    next(); // User is authenticated, proceed to the next middleware or route
+  } else {
+    res.redirect("/adminsignin"); // Redirect to sign-in page if not authenticated
+  }
+};
+
 // Route to serve the signup page (GET request)
 app.get("/signup", (req, res) => {
   res.render("signup");  // Render the signup.ejs page
@@ -117,6 +153,11 @@ app.post("/signup", (req, res) => {
 // Dashboard route (authenticated)
 app.get("/dashboard", authenticate, (req, res) => {
   res.render("dashboard", { user: req.session.user });
+});
+
+// Dashboard route (authenticated)
+app.get("/admindashboard", authenticateAdmin, (req, res) => {
+  res.render("admindashboard", { user: req.session.user });
 });
 
 
@@ -281,7 +322,38 @@ app.get("/profile", authenticate, (req, res) => {
 
 
 
+app.get("/user", authenticateAdmin, (req, res) => {
+  const sql = `
+    SELECT u.name, u.phone, u.nid_no 
+    FROM users u
+    
+  `;
 
+  con.query(sql, (error, results) => {
+    if (error) {
+      console.error("Error fetching members data:", error);
+      return res.status(500).send("An error occurred while retrieving members data.");
+    }
+
+    res.render("user", { users: results });
+  });
+});
+app.get("/food", authenticateAdmin, (req, res) => {
+  const sql = `
+    SELECT food_item, amount, given_at, pickup_location, contact
+    FROM food
+    
+  `;
+
+  con.query(sql, (error, results) => {
+    if (error) {
+      console.error("Error fetching members data:", error);
+      return res.status(500).send("An error occurred while retrieving members data.");
+    }
+
+    res.render("food", { foods: results });
+  });
+});
 
 // Start the server
 app.listen(5500, () => {
